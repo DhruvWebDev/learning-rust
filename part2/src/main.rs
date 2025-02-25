@@ -2,8 +2,13 @@ use std::collections::HashMap;
 use std::io;
 use std::fmt::Display;
 
+//Traits are like the interfaces in ts
 trait Summary {
     fn summarize(&self) -> String;
+}
+
+trait Name {
+    fn name(&self) -> String;
 }
 
 struct User {
@@ -11,11 +16,16 @@ struct User {
     age:u8,
 }
 
-impl Summary for User {
+impl Summary User {
     fn summarize(&self) -> String{
         return format!("User {} is {} year old", self.name, self.age);
     }
 } 
+impl Name for User {
+    fn name(&self) -> String {
+        return format!("User {} ", self.name);        
+    }
+}
 
 fn main() {
     println!("Give values for a vector (space-separated integers):");
@@ -116,6 +126,7 @@ fn main() {
         age : 14
     };
     println!("{}", user.summarize());
+    println!("{}", user.name());
 
     //Using impl Trait in Function Parameters
     print_value(1);
