@@ -1,5 +1,21 @@
 use std::collections::HashMap;
 use std::io;
+use std::fmt::Display;
+
+trait Summary {
+    fn summarize(&self) -> String;
+}
+
+struct User {
+    name:String,
+    age:u8,
+}
+
+impl Summary for User {
+    fn summarize(&self) -> String{
+        return format!("User {} is {} year old", self.name, self.age);
+    }
+} 
 
 fn main() {
     println!("Give values for a vector (space-separated integers):");
@@ -95,6 +111,37 @@ fn main() {
     print_data::<i32>(42);          // Explicitly specifying the type `i32`
     print_data::<String>(String::from("Hello!")); // Explicitly specifying the type `String`
 
+    let user = User {
+        name : String::from("Dhruv"),
+        age : 14
+    };
+    println!("{}", user.summarize());
+
+    //Using impl Trait in Function Parameters
+    print_value(1);
+//The impl Trait syntax provides a concise way to indicate that a function parameter implements a specific trait. For example, consider a function that accepts any type implementing the Display trait:
+
+    //Lifetimes 
+    let ans;
+    let str1:String = String::from("Hello");
+
+    //Scope
+    {
+        let str2:String = String::from("DHRUV KHANDELWAL");
+        ans  = longest(&str1, &str2);
+
+          println!("The answer, the longest string is  :{}", ans);
+    }
+
+  
+}
+
+fn longest<'a> (a: &'a str, b:&'a str) -> &'a str{
+    if a > b{
+        return a;
+    }else {
+        return b;
+    }
 }
 //Here in the Vec<i32> we have given the type of vector i.e. it is string , integer ...
 fn get_even_num(vector: &Vec<i32>) -> Vec<i32> {
@@ -132,3 +179,11 @@ fn first_word(word:&String) -> &str {
 fn print_data<T:std::fmt::Display>(data:T){
     println!("{}", data);
 }
+
+
+fn print_value(value: impl Display) {
+    println!("{}", value);
+}
+//In this example, the print_value function can accept any type that implements the Display trait, such as integers, strings, or custom types with a Display implementation.
+
+
