@@ -5,6 +5,7 @@ use ollama_rs::generation::completion::GenerationResponse;
 
 use std::io::Write;
 
+
 fn main() {
     let rt = tokio::runtime::Builder::new_current_thread()
         .enable_all()
