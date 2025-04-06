@@ -1,18 +1,15 @@
-name: Rust Test
+name: Rust Release
 
 on:
   push:
-    branches: [ "main" ]
     tags:
-      - '*' # Triggers release only on tag pushes
-  pull_request:
-    branches: [ "main" ]
+      - 'v*'  # Triggers on tags like v0.0.1, v1.2.3
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,20 +23,11 @@ jobs:
 
       - name: Build project
         working-directory: ./multi_threading
-        run: cargo build --verbose
+        run: cargo build --release --verbose
 
       - name: Run tests
         working-directory: ./multi_threading
         run: cargo test --verbose
-
-  release:
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -47,8 +35,8 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           body: |
-            Changes in this Release:
-            - First Change
-            - Second Change
+            📦 Rust release from tag ${{ github.ref_name }}
+            - Add more detailed changes here if needed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
