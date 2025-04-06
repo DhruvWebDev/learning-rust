@@ -2,9 +2,6 @@ name: Rust Release
 
 on:
   push:
-    tags:
-      - 'v*'  # Triggers on tags like v0.0.1, v1.2.3
-
 env:
   CARGO_TERM_COLOR: always
 
@@ -28,15 +25,3 @@ jobs:
       - name: Run tests
         working-directory: ./multi_threading
         run: cargo test --verbose
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          body: |
-            📦 Rust release from tag ${{ github.ref_name }}
-            - Add more detailed changes here if needed
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
