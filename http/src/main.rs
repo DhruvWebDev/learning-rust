@@ -1,47 +1,99 @@
-#[allow(unused_imports)]
+// use std::net::TcpListener;
+// use std::io::{self, BufRead, BufReader, Write};
+// use std::net::TcpStream;
+
+// fn main() {
+//     println!("Logs from your program will appear here!");
+
+//     let listener = TcpListener::bind("127.0.0.1:4221").unwrap();
+
+//     for stream in listener.incoming() {
+//         match stream {
+//             Ok(stream) => {
+//                 std::thread::spawn(move || {
+//                     handle_connection(stream).unwrap();
+//                 });
+//             }
+//             Err(e) => {
+//                 println!("error: {}", e);
+//             }
+//         }
+//     }
+// }
+
+// fn handle_connection(mut stream: TcpStream) -> io::Result<()> {
+//     println!("accepted new connection");
+
+//     let mut buf_reader = BufReader::new(&mut stream);
+//     let mut request_line = String::new();
+//     buf_reader.read_line(&mut request_line)?;
+
+//     let trimmed = request_line.trim();
+//     let path = trimmed.split_whitespace().nth(1).unwrap_or("/");
+//     println!("path: {}", path);
+
+//     let echo_value = path.split('/').nth(2).unwrap_or("");
+//     println!("value to echo: {}", echo_value);
+//     println!("request_line: {}", trimmed);
+
+//     let response = if trimmed == "GET / HTTP/1.1" {
+//         "HTTP/1.1 200 OK\r\n\r\n".to_string()
+//     } else if trimmed == format!("GET /echo/{} HTTP/1.1", echo_value) {
+//         format!(
+//             "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}",
+//             echo_value.len(),
+//             echo_value
+//         )
+//     } else {
+//         "HTTP/1.1 404 Not Found\r\n\r\n".to_string()
+//     };
+
+//     stream.write_all(response.as_bytes())?;
+//     stream.flush()?;
+//     Ok(())
+// }
+
 use std::net::TcpListener;
-use std::io::{BufRead, BufReader, Read, Write};
+use std::io::{BufRead, BufReader, Write};
 
-/*
-/ Status line
-HTTP/1.1  // HTTP version
-200       // Status code
-OK        // Optional reason phrase
-\r\n      // CRLF that marks the end of the status line
-
-// Headers (empty)
-\r\n      // CRLF that marks the end of the headers
-
-// Response body (empty)
-
-*/
 fn main() {
-    println!("Logs from your program will appear here!");
+    println!("Server running on 127.0.0.1:4221");
 
     let listener = TcpListener::bind("127.0.0.1:4221").unwrap();
 
     for stream in listener.incoming() {
         match stream {
             Ok(mut stream) => {
-                println!("accepted new connection");
+                println!("Accepted new connection");
 
-                // Create BufReader and clone request line safely
                 let mut buf_reader = BufReader::new(&mut stream);
                 let mut request_line = String::new();
                 buf_reader.read_line(&mut request_line).unwrap();
 
-                println!("request_line: {}", request_line.trim());
+                let trimmed = request_line.trim();
+                let path = trimmed.split_whitespace().nth(1).unwrap_or("/");
+                println!("Path: {}", path);
 
-                let response = match request_line.trim() {
-                    "GET / HTTP/1.1" => "HTTP/1.1 200 OK\r\n\r\n",
-                    _ => "HTTP/1.1 404 Not Found\r\n\r\n",
+                let echo_value = path.split('/').nth(2).unwrap_or("");
+                println!("Echoing: {}", echo_value);
+
+                let response = if trimmed == "GET / HTTP/1.1" {
+                    "HTTP/1.1 200 OK\r\n\r\n".to_string()
+                } else if trimmed == format!("GET /echo/{} HTTP/1.1", echo_value) {
+                    format!(
+                        "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}",
+                        echo_value.len(),
+                        echo_value
+                    )
+                } else {
+                    "HTTP/1.1 404 Not Found\r\n\r\n".to_string()
                 };
 
                 stream.write_all(response.as_bytes()).unwrap();
-                stream.flush().unwrap(); // optional, but good practice
+                stream.flush().unwrap();
             }
             Err(e) => {
-                println!("error: {}", e);
+                eprintln!("Connection error: {}", e);
             }
         }
     }
