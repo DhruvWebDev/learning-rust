@@ -1,4 +1,4 @@
-name: Rust Test 
+name: Rust Test
 
 on:
   push:
@@ -11,16 +11,21 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Build
-      working-directory: ./multi_threading
-      run: cargo build --verbose
-      
-    - name: Run tests
-      working-directory: ./multi_threading
-      run: cargo test --verbose
+      - name: Install Rust
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Build project
+        working-directory: ./multi_threading
+        run: cargo build --verbose
+
+      - name: Run tests
+        working-directory: ./multi_threading
+        run: cargo test --verbose
